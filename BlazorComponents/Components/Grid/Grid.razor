@@ -1,0 +1,148 @@
+﻿@typeparam TRowData
+
+<CascadingValue IsFixed="true" Value="this">@ChildContent</CascadingValue>
+
+@* Render the table *@
+<div class="table-responsive">
+    <table class="table table-hover" @attributes="@TableAttributes">
+         <thead class="thead-light">
+            <tr>
+
+                @foreach (var column in columns)
+                {
+                    @column.HeaderTemplate
+                }
+
+                @if(HasEdit)
+                {
+                    <th></th>
+                }
+
+                @if(HasDelete)
+                {
+                    <th></th>
+                }
+
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                if (paginatedList != null)
+                {
+                    foreach (var item in paginatedList)
+                    {
+                        object obj = (object)item;
+
+                        <tr>
+                            @foreach (var column in columns)
+                            {
+                                @column.CellTemplate(item)
+                            }
+
+                            @if(HasEdit)
+                            {
+                                <td style="text-align:right; width:50px">
+                                    <button class="btn btn-warning btn-sm" @onclick="@(() => OnEditRecord.InvokeAsync(obj))">
+                                        <span class="oi oi-pencil" aria-hidden="true"></span>
+                                    </button>
+                                </td>
+                            }
+
+                            @if(HasDelete)
+                            {
+                                <td style="text-align:right; width:50px">
+                                    <button class="btn btn-danger btn-sm" @onclick="@(() => OnDeleteRecord.InvokeAsync(obj))">
+                                        <span class="oi oi-trash" aria-hidden="true"></span>
+                                    </button>
+                                </td>
+                            }
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="@GetColSpan()">
+                    <Pager PageIndex=@paginatedList.PageIndex TotalPages=@paginatedList.TotalPages OnClick="PageIndexChanged"
+                            HasNextPage=@paginatedList.HasNextPage HasPreviousPage=@paginatedList.HasPreviousPage>
+                    </Pager>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+@code {
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> TableAttributes { get; set; }
+
+    [Parameter]
+    public List<TRowData> Items { get; set; }
+
+    // This fragment should contains all the GridColumn
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public bool HasEdit { get; set; }
+
+    [Parameter]
+    public bool HasDelete { get; set; }
+
+    [Parameter]
+    public int PageSize { get; set; }
+
+    [Parameter]
+    public EventCallback<object> OnDeleteRecord { get; set; }
+
+    [Parameter]
+    public EventCallback<object> OnEditRecord { get; set; }
+
+    private readonly List<GridColumn<TRowData>> columns = new List<GridColumn<TRowData>>();
+    private PaginatedList<TRowData> paginatedList = new PaginatedList<TRowData>();
+
+    // GridColumn uses this method to add a column
+    internal void AddColumn(GridColumn<TRowData> column)
+    {
+        columns.Add(column);
+    }
+
+    protected override void OnParametersSet()
+    {
+        if(Items.Count > 0)
+            paginatedList = new PaginatedList<TRowData>(Items, 1, PageSize); 
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {        
+            StateHasChanged();
+        }
+    }
+
+    private void PageIndexChanged(int newPageNumber)
+    {
+        if (newPageNumber < 1 || newPageNumber > paginatedList.TotalPages)
+        {
+            return;
+        }
+
+        paginatedList = new PaginatedList<TRowData>(Items, newPageNumber, PageSize);
+        StateHasChanged();
+    }
+
+    private int GetColSpan()
+    {
+        int colSpan = columns.Count;
+
+        if(HasEdit)
+            colSpan++;
+
+        if (HasDelete)
+            colSpan++;
+
+        return colSpan;
+    }
+}
