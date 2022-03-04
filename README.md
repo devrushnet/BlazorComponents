@@ -21,7 +21,7 @@ Donwload BlazorComponents.ClassLibrary and reference to your project, in the fil
         <GridColumn TRowData="WeatherForecast" Expression="f => f.Summary"/>
     </Grid>
     
-      private void OnDeleteRecord(object item)
+     private void OnDeleteRecord(object item)
     {
         modal.Open();
     }
