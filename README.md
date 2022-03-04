@@ -44,9 +44,11 @@ In the @code add a modal object reference
         </Footer>
     </Modal>
     
+`
 @code {
     private Modal modal { get; set; }
   }
+ `
 
 
 
