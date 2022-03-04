@@ -1,5 +1,5 @@
 ﻿
-namespace BlazorComponents.Components.Pager
+namespace BlazorComponents.ClassLibrary.Components.Pager
 {
     public class PaginatedList<T> : List<T>
     {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 
-namespace BlazorComponents.Components.Tab
+namespace BlazorComponents.ClassLibrary.Components.Pager
 {
     public interface ITab
     {
