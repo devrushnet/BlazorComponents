@@ -30,4 +30,23 @@ Donwload BlazorComponents.ClassLibrary and reference to your project, in the fil
     {
         
     }
-}
+###### Modal
+In the @code add a modal object reference
+
+    <Modal @ref="@modal">
+        <Title>Action</Title>
+        <Body>
+             <p>Delete selected item ?</p>
+        </Body>
+        <Footer>
+            <button class="btn btn-danger btn-sm" type="button"  @onclick="() => modal.Close()">YES</button>
+            <button class="btn btn-warning btn-sm" type="button" @onclick="() => modal.Close()">NO</button>
+        </Footer>
+    </Modal>
+    
+@code {
+    private Modal modal { get; set; }
+  }
+
+
+
